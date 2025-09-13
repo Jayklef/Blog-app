@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Generator</title>
+    <link
+      href="
+    https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @-webkit-keyframes rotate {
+        from {
+          -webkit-transform: rotate(0deg);
+        }
+        to {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+
+      .load {
+        width: 100px;
+        height: 100px;
+        margin: 110px auto 0;
+        border: solid 10px #882211;
+        border-radius: 50%;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        -webkit-transition: all 0.5s ease-in;
+        -webkit-animation-name: rotate;
+        -webkit-animation-duration: 1s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: linear;
+
+        transition: all 0.5s ease-in;
+        animation-name: rotate;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen bg-gray-100 font-sans">
+    <nav class="bg-blue-600 p-4 text-white flex justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">Blog Generator</h1>
+      </div>
+      <div>
+        <div>
+          <a href="logout" class="text-white hover:underline">Welcome {{user.username}}</a>
+          <a href="logout" class="text-white hover:underline">Logout</a>
+      </div>
+    </nav>
+    <!--main-->
+    <div class="flex-grow container mx-auto mt-10 px-4 sm:px-0">
+      <div
+        class="mx-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 flex flex-col"
+      >
+        <div class="text-center">
+          <h2 class="text-2xl font-semibold mb-4">
+            Welcome to the Blog generator
+          </h2>
+          <p class="text-gray-700">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure culpa
+            nobis asperiores eaque sunt, ducimus id dolorem omnis itaque dolore
+            quasi perferendis tempora quaerat, minima tempore reprehenderit, ab
+            nostrum et expedita nihil? Expedita labore in quia beatae, soluta
+            accusamus vel aut eum dolores, necessitatibus fugit iure facilis
+            adipisci praesentium perferendis. Ad repudiandae nostrum est!
+            Delectus, repellendus. Nam error aut reprehenderit nulla, quas
+            excepturi? Provident nostrum quo ea debitis aspernatur aliquam est
+          </p>
+        </div>
+        <br />
+
+        <!--Youtube link section-->
+        <div>
+          <h2 class="text-xl mb-4 font-semibold">Enter Youtube Link</h2>
+          <div class="flex space-x-4">
+            <input
+              id="youtubelink"
+              type="url"
+              placeholder="Paste youtube link"
+              class="flex-grow p-2 border border-blue-400 rounded-l-md"
+            />
+            <button
+              id="generatedBlogButton"
+              class="bg-blue-600 text-white pc-4 py-2 rounded-r-md hover:bg-blue-700 transition-colors"
+            >
+              Generate Blog
+            </button>
+          </div>
+        </div>
+
+        <!--Section for spinner-->
+        <div style="display: none" id="spinner" class="load"></div>
+
+        <!--Generated blog-->
+        <section class="mt-10 flex-grow">
+          <h2 class="text-xl mb-4 font-semibold">
+            Generated Blog Article from Youtube
+          </h2>
+          <div id="blogcontent" class="mt-02 text-gray-700 space-y-4"></div>
+        </section>
+      </div>
+    </div>
+    <footer class="text-center p-4 text-black mt-6">
+      Powered by Jerrycodes
+    </footer>
+
+    <script>
+        document.getElementById('generatedBlogButton').addEventListener('click', async () => {
+
+          const youtubelink = document.getElementById('youtubelink').value;
+          const loadingIndicator = document.getElementById('loading');
+          const blogcontent = document.getElementById('blogcontent');
+
+          if(youtubelink){
+            document.getElementById('spinner').style.display = 'block';
+            loadingIndicator.classList.remove('hidden');
+            blogcontent.innerHTML = '';  //clear previous content
+
+            const endpointUrl = '/generate-blog';
+
+            try {
+                  const response = await fetch(endpointUrl, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+
+                    body: JSON.stringify({link: youtubelink})
+                  });
+
+                  const data = await response.json();
+
+                  blogcontent.innerHTML = data.content;
+                  loadingIndicator.classList.add('hidden');
+
+            } catch (error){
+                console.error("Error occured:", error);
+                alert("Something went wrong, please try again later");
+                loadingIndicator.classList.add('hidden');
+            }
+
+            document.getElementById('spinner').style.display = 'none';
+
+          } else {
+            alert("Please enter a Youtube link");
+          }
+
+        });
+
+    </script>
+  </body>
+</html>
